@@ -1,0 +1,15 @@
+{
+  "name": "입금관리",
+  "short_name": "입금관리",
+  "display": "standalone",
+  "start_url": "./",
+  "background_color": "#121318",
+  "theme_color": "#121318",
+  "icons": [
+    {
+      "src": "https://via.placeholder.com/512/121318/4ade80?text=App",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}
