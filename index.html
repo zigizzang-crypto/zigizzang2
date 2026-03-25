@@ -2,216 +2,114 @@
 <html lang="ko">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    
     <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
     <meta name="mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-title" content="입금관리">
-    
-    <title>입금 관리 시스템</title>
-    
-    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700&display=swap" rel="stylesheet">
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
-    
+    <link rel="manifest" href="data:application/json,{'display':'standalone'}">
+
+    <title>입금관리 앱</title>
     <style>
-        :root {
-            --primary-color: #4a90e2;
-            --secondary-color: #f5f7fa;
-            --text-color: #333;
-            --accent-color: #e74c3c;
-        }
-
-        body {
-            font-family: 'Noto Sans KR', sans-serif;
-            background-color: var(--secondary-color);
-            margin: 0;
-            padding: 20px;
-            color: var(--text-color);
-            /* 모바일에서 롱터치로 인한 선택 방지 (앱 느낌 강조) */
-            -webkit-touch-callout: none;
-            -webkit-user-select: none;
-            user-select: none;
-        }
-
-        .container {
-            max-width: 500px;
-            margin: 0 auto;
-            background: white;
-            padding: 25px;
-            border-radius: 20px;
-            box-shadow: 0 10px 20px rgba(0,0,0,0.05);
-        }
-
-        h2 {
-            text-align: center;
-            color: var(--primary-color);
-            margin-bottom: 25px;
-            font-weight: 700;
-        }
-
-        .input-group {
-            margin-bottom: 15px;
-        }
-
-        label {
-            display: block;
-            margin-bottom: 5px;
-            font-weight: 500;
-            font-size: 0.9rem;
-        }
-
-        input, select {
-            width: 100%;
-            padding: 12px;
-            border: 1px solid #ddd;
-            border-radius: 10px;
-            box-sizing: border-box;
-            font-size: 16px; /* 모바일 줌 방지를 위해 16px 권장 */
-        }
-
-        button {
-            width: 100%;
-            padding: 15px;
-            background-color: var(--primary-color);
-            color: white;
-            border: none;
-            border-radius: 10px;
-            font-size: 1rem;
-            font-weight: 700;
-            cursor: pointer;
-            transition: background 0.3s;
-            margin-top: 10px;
-        }
-
-        button:active {
-            background-color: #357abd;
-            transform: scale(0.98);
-        }
-
-        .list-container {
-            margin-top: 30px;
-        }
-
-        .item {
-            background: #fff;
-            border: 1px solid #eee;
-            padding: 15px;
-            border-radius: 12px;
-            margin-bottom: 10px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        .item-info div {
-            margin-bottom: 3px;
-        }
-
-        .amount {
-            font-weight: 700;
-            color: var(--primary-color);
-        }
-
-        .date {
-            font-size: 0.8rem;
-            color: #888;
-        }
-
-        .delete-btn {
-            background: #ffeded;
-            color: var(--accent-color);
-            border: none;
-            padding: 8px 12px;
-            border-radius: 8px;
-            font-size: 0.8rem;
-            width: auto;
-            margin: 0;
-        }
+        /* 경직님의 기존 스타일 코드 시작 */
+        body { font-family: sans-serif; padding: 20px; line-height: 1.6; }
+        .container { max-width: 500px; margin: 0 auto; border: 1px solid #ccc; padding: 20px; border-radius: 10px; }
+        h1 { text-align: center; }
+        label { display: block; margin-bottom: 5px; }
+        input[type="text"], input[type="number"], input[type="date"] { width: 100%; padding: 8px; margin-bottom: 10px; border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box; }
+        button { width: 100%; padding: 10px; background-color: #28a745; color: white; border: none; border-radius: 4px; cursor: pointer; font-size: 16px; }
+        button:hover { background-color: #218838; }
+        table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+        th, td { border: 1px solid #ccc; padding: 8px; text-align: left; }
+        th { background-color: #f2f2f2; }
+        .delete-btn { background-color: #dc3545; color: white; border: none; padding: 5px 10px; border-radius: 4px; cursor: pointer; }
+        .delete-btn:hover { background-color: #c82333; }
+        /* 경직님의 기존 스타일 코드 끝 */
     </style>
 </head>
 <body>
 
 <div class="container">
-    <h2><i class="fa-solid fa-wallet"></i> 입금 관리</h2>
-    
-    <div class="input-group">
-        <label>입금처</label>
-        <input type="text" id="client" placeholder="예: OO빌라 302호">
-    </div>
-    
-    <div class="input-group">
-        <label>금액</label>
-        <input type="number" id="amount" placeholder="숫자만 입력">
-    </div>
+    <h1>입금 관리</h1>
+    <label for="date">날짜:</label>
+    <input type="date" id="date">
+    <label for="source">입금처:</label>
+    <input type="text" id="source" placeholder="예: 거실 페인트">
+    <label for="amount">금액:</label>
+    <input type="number" id="amount" placeholder="예: 100000">
+    <button id="add-btn">추가하기</button>
 
-    <div class="input-group">
-        <label>입금 날짜</label>
-        <input type="date" id="date">
-    </div>
-
-    <button onclick="addEntry()">기록 저장하기</button>
-
-    <div class="list-container" id="listContainer">
-        </div>
+    <table id="deposit-table">
+        <thead>
+            <tr>
+                <th>날짜</th>
+                <th>입금처</th>
+                <th>금액</th>
+                <th>삭제</th>
+            </tr>
+        </thead>
+        <tbody>
+            </tbody>
+    </table>
 </div>
 
 <script>
-    // 오늘 날짜 기본 설정
-    document.getElementById('date').valueAsDate = new Date();
+    /* 경직님의 기존 자바스크립트 로직 그대로 유지 */
+    const dateInput = document.getElementById('date');
+    const sourceInput = document.getElementById('source');
+    const amountInput = document.getElementById('amount');
+    const addBtn = document.getElementById('add-btn');
+    const tableBody = document.querySelector('#deposit-table tbody');
 
-    // 로컬 스토리지 데이터 불러오기
-    let entries = JSON.parse(localStorage.getItem('incomeEntries')) || [];
+    window.onload = () => {
+        const today = new Date().toISOString().split('T')[0];
+        dateInput.value = today;
+        loadData();
+    };
 
-    function render() {
-        const container = document.getElementById('listContainer');
-        container.innerHTML = '<h3>입금 내역</h3>';
-        
-        entries.sort((a, b) => new Date(b.date) - new Date(a.date)).forEach((entry, index) => {
-            const div = document.createElement('div');
-            div.className = 'item';
-            div.innerHTML = `
-                <div class="item-info">
-                    <div style="font-weight:700">${entry.client}</div>
-                    <div class="amount">${Number(entry.amount).toLocaleString()}원</div>
-                    <div class="date">${entry.date}</div>
-                </div>
-                <button class="delete-btn" onclick="deleteEntry(${index})">삭제</button>
-            `;
-            container.appendChild(div);
-        });
+    addBtn.onclick = () => {
+        const date = dateInput.value;
+        const source = sourceInput.value;
+        const amount = amountInput.value;
+        if (!date || !source || !amount) { alert('모든 필드를 입력해주세요.'); return; }
+        const data = { date, source, amount };
+        saveData(data);
+        renderRow(data);
+        sourceInput.value = '';
+        amountInput.value = '';
+    };
+
+    function saveData(data) {
+        const list = JSON.parse(localStorage.getItem('deposits') || '[]');
+        list.push(data);
+        localStorage.setItem('deposits', JSON.stringify(list));
     }
 
-    function addEntry() {
-        const client = document.getElementById('client').value;
-        const amount = document.getElementById('amount').value;
-        const date = document.getElementById('date').value;
-
-        if(!client || !amount || !date) {
-            alert('모든 항목을 입력해주세요!');
-            return;
-        }
-
-        entries.push({ client, amount, date });
-        localStorage.setItem('incomeEntries', JSON.stringify(entries));
-        
-        // 입력창 초기화
-        document.getElementById('client').value = '';
-        document.getElementById('amount').value = '';
-        
-        render();
+    function loadData() {
+        const list = JSON.parse(localStorage.getItem('deposits') || '[]');
+        list.forEach(renderRow);
     }
 
-    function deleteEntry(index) {
-        if(confirm('정말 삭제하시겠습니까?')) {
-            entries.splice(index, 1);
-            localStorage.setItem('incomeEntries', JSON.stringify(entries));
-            render();
-        }
+    function renderRow(data) {
+        const row = document.createElement('tr');
+        row.innerHTML = `
+            <td>${data.date}</td>
+            <td>${data.source}</td>
+            <td>${Number(data.amount).toLocaleString()}원</td>
+            <td><button class="delete-btn">삭제</button></td>
+        `;
+        row.querySelector('.delete-btn').onclick = () => {
+            row.remove();
+            removeData(data);
+        };
+        tableBody.appendChild(row);
     }
 
-    // 초기 실행
-    render();
+    function removeData(data) {
+        let list = JSON.parse(localStorage.getItem('deposits') || '[]');
+        list = list.filter(item => !(item.date === data.date && item.source === data.source && item.amount === data.amount));
+        localStorage.setItem('deposits', JSON.stringify(list));
+    }
 </script>
-
 </body>
 </html>
