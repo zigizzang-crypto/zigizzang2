@@ -7,6 +7,11 @@
   "theme_color": "#121318",
   "icons": [
     {
+      "src": "https://via.placeholder.com/192/121318/4ade80?text=App",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
       "src": "https://via.placeholder.com/512/121318/4ade80?text=App",
       "sizes": "512x512",
       "type": "image/png"
