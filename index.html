@@ -480,18 +480,34 @@ function saveColor(){
 }
 
 function showRecent(){
-  var entries=[];
+  var allPayments = [];
+  
   D.clients.forEach(function(c){
-    var mIdx=-1,date='',month='';
-    D.months.forEach(function(m,mi){var v=(c.payments||{})[m];if(v&&mi>mIdx){mIdx=mi;date=v;month=m;}});
-    entries.push({name:c.name,date:date,month:month,mIdx:mIdx,day:date?parseInt(date.split('/')[1]||'0'):0});
+    D.months.forEach(function(m){
+      var v = (c.payments||{})[m];
+      if(v) { 
+        var parts = v.split('/');
+        var sortVal = parts.length === 2 ? parseInt(parts[0]) * 100 + parseInt(parts[1]) : 0;
+        allPayments.push({name: c.name, month: m, date: v, sortVal: sortVal});
+      }
+    });
   });
-  entries.sort(function(a,b){return b.mIdx!==a.mIdx?b.mIdx-a.mIdx:b.day-a.day;});
-  var paid=entries.filter(function(e){return e.mIdx>=0;}),unpaid=entries.filter(function(e){return e.mIdx<0;});
-  var html='';
-  paid.forEach(function(e){html+='<div class="r-item"><span class="r-name">'+escH(e.name)+'</span><span class="r-date">'+e.month+' '+e.date+'</span></div>';});
-  if(unpaid.length){html+='<div style="font-size:11px;color:var(--text-muted);padding:10px 2px 4px;font-weight:700">미입금 ('+unpaid.length+'건)</div>';unpaid.forEach(function(e){html+='<div class="r-item"><span class="r-name" style="color:var(--text-muted)">'+escH(e.name)+'</span><span class="r-date" style="color:var(--text-muted)">—</span></div>';});}
-  document.getElementById('rList').innerHTML=html||'<div style="text-align:center;padding:24px;color:var(--text-muted)">없음</div>';showMo('rMo');
+
+  allPayments.sort(function(a, b){ return b.sortVal - a.sortVal; });
+
+  var recent20 = allPayments.slice(0, 20);
+
+  var html = '';
+  if(recent20.length > 0) {
+    recent20.forEach(function(e){
+      html += '<div class="r-item"><span class="r-name">' + escH(e.name) + '</span><span class="r-date">' + e.month + ' ' + e.date + '</span></div>';
+    });
+  } else {
+    html = '<div style="text-align:center;padding:24px;color:var(--text-muted)">최근 입금 내역이 없습니다.</div>';
+  }
+  
+  document.getElementById('rList').innerHTML = html;
+  showMo('rMo');
 }
 
 function doSync(){
