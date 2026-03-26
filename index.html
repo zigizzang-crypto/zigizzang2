@@ -481,26 +481,35 @@ function saveColor(){
 
 function showRecent(){
   var allPayments = [];
-  
+  var curMonth = new Date().getMonth() + 1; // 현재 스마트폰의 월(Month) 확인
+
   D.clients.forEach(function(c){
-    // mIdx는 엑셀(테이블)의 열 순서입니다. (0부터 시작)
-    D.months.forEach(function(m, mIdx){ 
+    D.months.forEach(function(m){
       var v = (c.payments||{})[m];
       if(v) { 
         var parts = v.split('/');
-        // 날짜(일)를 가져옵니다.
-        var day = parts.length === 2 ? parseInt(parts[1]) : 0;
-        
-        // ★ 핵심 수정: '월 숫자' 대신 '열 순서(mIdx)'에 가중치를 두어 정렬 값을 만듭니다.
-        // 이렇게 하면 12월이 1월보다 무조건 크다고 착각하는 해 넘김 오류가 해결됩니다!
-        var sortVal = (mIdx * 100) + day; 
-        
+        var sortVal = 0;
+
+        if (parts.length === 2) {
+            var pMonth = parseInt(parts[0], 10); // 적혀있는 '월' 글자
+            var pDay = parseInt(parts[1], 10);   // 적혀있는 '일' 글자
+
+            // ★ 해 넘김 처리 로직: 
+            // 적혀있는 달이 현재 달보다 4 이상 크면 '작년' 데이터로 간주하고 뒤로 밀어버림 (예: 현재 3월인데 12월 데이터가 있으면 작년 12월 취급)
+            if (pMonth > curMonth + 4) {
+                pMonth -= 12;
+            }
+            
+            // 열(칸) 위치는 완전히 무시하고, 오직 적혀있는 '월/일' 글자로만 정렬 점수 계산
+            sortVal = (pMonth * 100) + pDay;
+        }
+
         allPayments.push({name: c.name, month: m, date: v, sortVal: sortVal});
       }
     });
   });
 
-  // 정렬 값이 큰 순서(최신순)로 정렬
+  // 계산된 날짜 점수가 높은 순(최신순)으로 정렬
   allPayments.sort(function(a, b){ return b.sortVal - a.sortVal; });
 
   // 상위 20개 자르기
@@ -518,6 +527,7 @@ function showRecent(){
   document.getElementById('rList').innerHTML = html;
   showMo('rMo');
 }
+
 
 function doSync(){
   var btn=document.getElementById('syncBtn');btn.textContent='⏳';
