@@ -23,10 +23,9 @@
 }
 *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
 body{font-family:-apple-system,'Malgun Gothic','맑은 고딕',sans-serif;background:var(--bg);color:var(--text);overflow:hidden;height:100vh;height:100dvh;display:flex;flex-direction:column}
-/* 하단 메뉴로 변경되면서 테두리 및 여백 조정 (아이폰 하단 바 겹침 방지 포함) */
 .toolbar{background:var(--bg2);border-top:1px solid var(--border);padding:6px 10px calc(6px + env(safe-area-inset-bottom));display:flex;align-items:center;justify-content:space-between;flex-shrink:0;z-index:50}
 .toolbar-left{display:flex;align-items:center;gap:4px}
-.mtab{padding:5px 12px;border-radius:8px;font-size:12px;font-weight:600;border:1px solid var(--border);background:transparent;color:var(--text-dim);cursor:pointer;font-family:inherit}
+.mtab{padding:5px 8px;border-radius:8px;font-size:12px;font-weight:600;border:1px solid var(--border);background:transparent;color:var(--text-dim);cursor:pointer;font-family:inherit;white-space:nowrap}
 .mtab.active{background:var(--green-bg);color:var(--green);border-color:var(--green)}
 .badges{display:flex;gap:4px;margin-left:4px}
 .badge{font-size:10px;font-weight:700;padding:2px 7px;border-radius:6px}
@@ -35,6 +34,7 @@ body{font-family:-apple-system,'Malgun Gothic','맑은 고딕',sans-serif;backgr
 .toolbar-right{display:flex;gap:5px}
 .toolbar-right button{background:var(--surface);border:1px solid var(--border);color:var(--text-dim);border-radius:8px;padding:5px 8px;font-size:12px;cursor:pointer;font-family:inherit}
 .toolbar-right button:active{background:var(--border);color:var(--text)}
+
 .tw{flex:1;overflow:auto;-webkit-overflow-scrolling:touch;scroll-snap-type:x proximity;scroll-behavior:smooth;scroll-padding-left:188px}
 table{border-collapse:collapse;min-width:100%;font-size:13px}
 thead th{position:sticky;top:0;z-index:20;background:var(--header-bg);border-bottom:2px solid var(--border-light);padding:8px 4px;font-weight:700;font-size:11px;color:var(--text-dim);white-space:nowrap;text-align:center;line-height:1.4}
@@ -83,8 +83,6 @@ tr.cb-teal td.cn,tr.cb-teal td.cname,tr.cb-teal td.camt{background:#0a5050!impor
 .nt-orange{color:#fb923c!important}
 .nt-red{color:#f87171!important}
 .nt-pink{color:#f472b6!important}
-.cbtn{width:15px;height:15px;border-radius:3px;border:none;cursor:pointer;flex-shrink:0;font-size:9px;display:inline-flex;align-items:center;justify-content:center;margin-left:2px;opacity:.6}
-.cbtn:active{opacity:1}
 .pos-sel{background:var(--surface);border:1px solid var(--border);color:var(--text);border-radius:5px;padding:2px;font-size:11px;width:36px;text-align-last:center;cursor:pointer;-webkit-appearance:none;appearance:none}
 .name-inp{background:transparent;border:1px solid var(--border-light);color:var(--text);font-family:inherit;font-size:11px;font-weight:700;padding:3px 5px;border-radius:5px;width:100%}
 .name-inp:focus{outline:none;border-color:var(--green);background:var(--surface)}
@@ -100,6 +98,20 @@ tr.cb-teal td.cn,tr.cb-teal td.cname,tr.cb-teal td.camt{background:#0a5050!impor
 .ba{background:var(--blue-bg);color:var(--blue);border:1px solid rgba(96,165,250,.3)!important}
 .bc{background:var(--surface);color:var(--text-dim);border:1px solid var(--border)!important}
 .bv{background:var(--green);color:#0f1117}
+
+.mw{flex:1;overflow:auto;-webkit-overflow-scrolling:touch;display:none;}
+.memo-wrap{padding:16px;padding-bottom:30px;}
+.memo-input-wrap{display:flex;gap:8px;margin-bottom:16px;}
+.memo-input{flex:1;background:var(--surface);border:2px solid var(--border);color:var(--text);padding:12px;border-radius:12px;font-family:inherit;font-size:14px;}
+.memo-input:focus{outline:none;border-color:var(--green);}
+.memo-add-btn{background:var(--green);color:#0f1117;border:none;padding:0 16px;border-radius:12px;font-weight:900;font-size:14px;cursor:pointer;white-space:nowrap;}
+.memo-add-btn:active{transform:scale(0.96);}
+.memo-item{background:var(--surface);border:1px solid var(--border);padding:14px;border-radius:12px;margin-bottom:10px;display:flex;justify-content:space-between;align-items:flex-start;gap:12px;}
+.memo-text{font-size:14px;line-height:1.5;white-space:pre-wrap;word-break:break-word;color:var(--text);}
+.memo-date{font-size:11px;color:var(--text-dim);margin-top:6px;font-weight:600;}
+.memo-del{background:var(--red-bg);color:var(--red);border:none;border-radius:8px;width:28px;height:28px;font-size:12px;display:flex;align-items:center;justify-content:center;cursor:pointer;flex-shrink:0;}
+.memo-del:active{background:var(--red);color:#fff;}
+
 .mo{position:fixed;inset:0;z-index:200;background:rgba(0,0,0,.65);display:none;align-items:flex-end;justify-content:center;backdrop-filter:blur(4px)}
 .mo.show{display:flex}
 .md{background:#1e2130;border:1px solid #3a3f55;border-radius:20px 20px 0 0;width:100%;max-width:420px;padding:16px 16px 28px;animation:su .22s ease}
@@ -175,12 +187,23 @@ tr.cb-teal td.cn,tr.cb-teal td.cname,tr.cb-teal td.camt{background:#0a5050!impor
 
 <div class="tw" id="tw"><table><thead><tr id="hr"></tr></thead><tbody id="tb"></tbody></table></div>
 
+<div class="mw" id="mw">
+  <div class="memo-wrap">
+    <div class="memo-input-wrap">
+      <input type="text" id="memoInp" class="memo-input" placeholder="새 메모를 입력하세요...">
+      <button class="memo-add-btn" onclick="addMemo()">추가</button>
+    </div>
+    <div id="memoList"></div>
+  </div>
+</div>
+
 <div class="bb" id="bb"></div>
 
 <div class="toolbar">
   <div class="toolbar-left">
-    <button class="mtab active" id="tabView" onclick="setMode('view',this)">📋 입금관리</button>
-    <button class="mtab" id="tabEdit" onclick="setMode('edit',this)">✏️ 거래처편집</button>
+    <button class="mtab active" id="tabView" onclick="setMode('view',this)">📋 입금</button>
+    <button class="mtab" id="tabEdit" onclick="setMode('edit',this)">✏️ 편집</button>
+    <button class="mtab" id="tabMemo" onclick="setMode('memo',this)">📝 메모</button>
     <span class="badges" id="badges"></span>
   </div>
   <div class="toolbar-right">
@@ -237,30 +260,16 @@ tr.cb-teal td.cn,tr.cb-teal td.cname,tr.cb-teal td.camt{background:#0a5050!impor
 
 <script>
 var CELL_COLORS=[
-  {k:'',bg:''},
-  {k:'blue',  bg:'#1e4d8c'},
-  {k:'green', bg:'#1a5c2e'},
-  {k:'yellow',bg:'#7a6000'},
-  {k:'orange',bg:'#8c3a00'},
-  {k:'red',   bg:'#7a1a1a'},
-  {k:'purple',bg:'#4a1a7a'},
-  {k:'pink',  bg:'#7a1a4a'},
-  {k:'teal',  bg:'#0a5050'}
+  {k:'',bg:''},{k:'blue',bg:'#1e4d8c'},{k:'green',bg:'#1a5c2e'},{k:'yellow',bg:'#7a6000'},
+  {k:'orange',bg:'#8c3a00'},{k:'red',bg:'#7a1a1a'},{k:'purple',bg:'#4a1a7a'},{k:'pink',bg:'#7a1a4a'},{k:'teal',bg:'#0a5050'}
 ];
 var NAME_COLORS=[
-  {k:'',       color:''},
-  {k:'white',  color:'#ffffff'},
-  {k:'skyblue',color:'#7dd3fc'},
-  {k:'blue',   color:'#60a5fa'},
-  {k:'green',  color:'#4ade80'},
-  {k:'yellow', color:'#fde047'},
-  {k:'orange', color:'#fb923c'},
-  {k:'red',    color:'#f87171'},
-  {k:'pink',   color:'#f472b6'}
+  {k:'',color:''},{k:'white',color:'#ffffff'},{k:'skyblue',color:'#7dd3fc'},{k:'blue',color:'#60a5fa'},
+  {k:'green',color:'#4ade80'},{k:'yellow',color:'#fde047'},{k:'orange',color:'#fb923c'},{k:'red',color:'#f87171'},{k:'pink',color:'#f472b6'}
 ];
 
 var SCRIPT_URL='';
-var D={months:[],clients:[]};
+var D={months:[],clients:[],memos:[]};
 var MODE='view',EDIT=null,DEL_IDX=-1,CMONTH='',editClients=[];
 var COLOR_IDX=-1,tmpCell='',tmpName='';
 
@@ -319,19 +328,24 @@ function unpaidCnt(m){var c=0;D.clients.forEach(function(cl){if(!(cl.payments||{
 function loadAll(){
   try{
     var ca=localStorage.getItem('imgdata');
-    if(ca){var c=JSON.parse(ca);D.months=c.months||[];D.clients=c.clients||[];render();document.getElementById('lo').classList.add('hide');}
+    if(ca){var c=JSON.parse(ca);D.months=c.months||[];D.clients=c.clients||[];D.memos=c.memos||[];render();document.getElementById('lo').classList.add('hide');}
   }catch(e){}
   apiGet(function(r){
     if(r&&r.success){
       D.months=r.months;D.clients=r.clients;
-      try{localStorage.setItem('imgdata',JSON.stringify({months:r.months,clients:r.clients}));}catch(e){}
-      render();
+      if(r.memos) D.memos = r.memos; // 구글시트에서 메모도 불러와 덮어쓰기
+      try{localStorage.setItem('imgdata',JSON.stringify({months:r.months,clients:r.clients,memos:D.memos}));}catch(e){}
+      if(MODE==='memo') renderMemos(); else render();
     }else toast('로드 실패','err');
     document.getElementById('lo').classList.add('hide');
   },function(){document.getElementById('lo').classList.add('hide');});
 }
 
-function render(){detectMonth();renderHead();renderBody();updateBadges();updateBB();document.getElementById('editNotice').style.display=(MODE==='edit')?'block':'none';}
+function render(){
+  if(MODE==='memo') return;
+  detectMonth();renderHead();renderBody();updateBadges();updateBB();
+  document.getElementById('editNotice').style.display=(MODE==='edit')?'block':'none';
+}
 
 function updateBB(){
   var bb=document.getElementById('bb');
@@ -418,10 +432,24 @@ function updateBadges(){
   var cnt=D.clients.length,amt=0;D.clients.forEach(function(c){amt+=(c.amount||0);});
   document.getElementById('badges').innerHTML='<span class="badge badge-p">'+cnt+'개</span><span class="badge badge-t">'+amt+'만</span>';
 }
+
 function setMode(m,btn){
   if(m==='edit')editClients=JSON.parse(JSON.stringify(D.clients));else editClients=[];
-  MODE=m;document.querySelectorAll('.mtab').forEach(function(b){b.classList.remove('active');});if(btn)btn.classList.add('active');render();
+  MODE=m;document.querySelectorAll('.mtab').forEach(function(b){b.classList.remove('active');});if(btn)btn.classList.add('active');
+  
+  if(m==='memo') {
+    document.getElementById('tw').style.display = 'none';
+    document.getElementById('mw').style.display = 'block';
+    document.getElementById('bb').style.display = 'none';
+    document.getElementById('editNotice').style.display = 'none';
+    renderMemos();
+  } else {
+    document.getElementById('tw').style.display = 'block';
+    document.getElementById('mw').style.display = 'none';
+    render();
+  }
 }
+
 function cancelEdit(){editClients=[];MODE='view';document.querySelectorAll('.mtab').forEach(function(b){b.classList.remove('active');});document.getElementById('tabView').classList.add('active');render();}
 function saveAllEdits(){
   capInputs();D.clients=JSON.parse(JSON.stringify(editClients));editClients=[];MODE='view';
@@ -478,7 +506,7 @@ function saveColor(){
   D.clients[COLOR_IDX].cellColor=tmpCell;
   D.clients[COLOR_IDX].nameColor=tmpName;
   closeAll();render();
-  try{localStorage.setItem('imgdata',JSON.stringify({months:D.months,clients:D.clients}));}catch(e){}
+  try{localStorage.setItem('imgdata',JSON.stringify({months:D.months,clients:D.clients,memos:D.memos}));}catch(e){}
   apiPost({action:'saveClientColor',idx:COLOR_IDX,cellColor:tmpCell,nameColor:tmpName},function(){toast('색상 저장됨');});
 }
 
@@ -523,10 +551,65 @@ function showRecent(){
   showMo('rMo');
 }
 
+function renderMemos() {
+  var html = '';
+  var list = D.memos || [];
+  if(list.length === 0) {
+    html = '<div style="text-align:center;padding:40px 20px;color:var(--text-muted);font-size:13px">저장된 메모가 없습니다.</div>';
+  } else {
+    for(var i = list.length - 1; i >= 0; i--) {
+      var m = list[i];
+      html += '<div class="memo-item"><div><div class="memo-text">' + escH(m.text) + '</div><div class="memo-date">' + m.date + '</div></div><button class="memo-del" onclick="delMemo(' + i + ')">✕</button></div>';
+    }
+  }
+  document.getElementById('memoList').innerHTML = html;
+}
+
+function addMemo() {
+  var inp = document.getElementById('memoInp');
+  var val = inp.value.trim();
+  if(!val) { toast('메모 내용을 입력하세요', 'warn'); return; }
+  if(!D.memos) D.memos = [];
+  
+  var now = new Date();
+  var mm = String(now.getMonth()+1).padStart(2,'0');
+  var dd = String(now.getDate()).padStart(2,'0');
+  var hh = String(now.getHours()).padStart(2,'0');
+  var mi = String(now.getMinutes()).padStart(2,'0');
+  var dateStr = now.getFullYear() + '.' + mm + '.' + dd + ' ' + hh + ':' + mi;
+  
+  D.memos.push({ text: val, date: dateStr });
+  inp.value = '';
+  try{localStorage.setItem('imgdata',JSON.stringify({months:D.months,clients:D.clients,memos:D.memos}));}catch(e){}
+  renderMemos();
+  toast('메모가 추가되었습니다.');
+  
+  // 구글 시트로 백업 전송!
+  apiPost({action:'saveMemos', memos: D.memos});
+}
+
+function delMemo(idx) {
+  if(confirm('이 메모를 삭제하시겠습니까?')) {
+    D.memos.splice(idx, 1);
+    try{localStorage.setItem('imgdata',JSON.stringify({months:D.months,clients:D.clients,memos:D.memos}));}catch(e){}
+    renderMemos();
+    toast('삭제되었습니다.');
+    
+    // 구글 시트로 변경사항 전송!
+    apiPost({action:'saveMemos', memos: D.memos});
+  }
+}
+
 function doSync(){
   var btn=document.getElementById('syncBtn');btn.textContent='⏳';
   apiGet(function(r){
-    if(r&&r.success){D.months=r.months;D.clients=r.clients;try{localStorage.setItem('imgdata',JSON.stringify({months:r.months,clients:r.clients}));}catch(e){}render();toast('동기화 완료!');}
+    if(r&&r.success){
+      D.months=r.months;D.clients=r.clients;
+      if(r.memos) D.memos = r.memos; // 시트에서 메모 불러오기
+      try{localStorage.setItem('imgdata',JSON.stringify({months:r.months,clients:r.clients,memos:D.memos}));}catch(e){} 
+      if(MODE==='memo') renderMemos(); else render(); 
+      toast('동기화 완료!');
+    }
     btn.textContent='🔄';
   },function(){btn.textContent='🔄';});
 }
