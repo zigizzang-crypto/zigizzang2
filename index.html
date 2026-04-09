@@ -43,9 +43,10 @@ thead th.cm{color:var(--green);background:linear-gradient(180deg,rgba(74,222,128
 th.sk,td.sk{position:sticky;z-index:10;background:var(--bg2)}
 thead th.sk{z-index:30;background:var(--header-bg)}
 
+/* --- 변경된 부분: 이름 칸(124px) 늘리고 금액 칸(34px) 줄임 --- */
 .cn{left:0;width:30px;min-width:30px;max-width:30px;text-align:center}
-.cname{left:30px;width:116px;min-width:116px;max-width:116px;text-align:left}
-.camt{left:146px;width:42px;min-width:42px;max-width:42px;text-align:right}
+.cname{left:30px;width:124px;min-width:124px;max-width:124px;text-align:left}
+.camt{left:154px;width:34px;min-width:34px;max-width:34px;text-align:right}
 td.cn,td.cname,td.camt{background:var(--bg2);outline:1px solid var(--bg2)}
 thead th.cn,thead th.cname,thead th.camt{background:var(--header-bg);outline:1px solid var(--header-bg)}
 tbody tr:nth-child(even) td.cn,
@@ -55,9 +56,9 @@ tbody td{padding:6px 4px;border-bottom:1px solid var(--border);vertical-align:mi
 tbody tr:nth-child(even) td{background:var(--row-alt)}
 tbody tr:nth-child(even) td.sk{background:color-mix(in srgb,var(--bg2),white 1.5%)}
 td.cn{font-size:10px;color:var(--text-dim);text-align:center;border-right:1px solid var(--border-light);font-weight:600}
-td.cname{font-weight:700;font-size:11px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;padding-left:4px}
+td.cname{font-weight:700;font-size:11px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;padding-left:4px;padding-right:8px;} /* 빨간 점을 위해 우측 여백 8px 확보 */
 td.cname.sp{color:var(--red-text)}
-td.camt{font-size:11px;color:var(--text);text-align:right;padding-right:5px;font-weight:600}
+td.camt{font-size:11px;color:var(--text);text-align:right;padding-right:3px;font-weight:600}
 td.dc{text-align:center;font-size:12px;font-weight:700;min-width:42px;cursor:pointer;user-select:none;color:var(--text-muted);scroll-snap-align:start}
 td.dc:active{opacity:.7}
 td.dc.hd{color:var(--text-dim);background:var(--green-cell)}
@@ -111,6 +112,9 @@ tr.cb-teal td.cn,tr.cb-teal td.cname,tr.cb-teal td.camt{background:#0a5050!impor
 .memo-date{font-size:11px;color:var(--text-dim);margin-top:6px;font-weight:600;}
 .memo-del{background:var(--red-bg);color:var(--red);border:none;border-radius:8px;width:28px;height:28px;font-size:12px;display:flex;align-items:center;justify-content:center;cursor:pointer;flex-shrink:0;}
 .memo-del:active{background:var(--red);color:#fff;}
+
+.cmemo-inp{width:100%;background:var(--bg2);border:1px solid var(--border);color:var(--text);padding:10px;border-radius:8px;font-family:inherit;font-size:12px;margin-bottom:12px;resize:none;height:60px;}
+.cmemo-inp:focus{outline:none;border-color:var(--green);}
 
 .mo{position:fixed;inset:0;z-index:200;background:rgba(0,0,0,.65);display:none;align-items:flex-end;justify-content:center;backdrop-filter:blur(4px)}
 .mo.show{display:flex}
@@ -251,9 +255,13 @@ tr.cb-teal td.cn,tr.cb-teal td.cname,tr.cb-teal td.camt{background:#0a5050!impor
 
 <div class="mo" id="colMo"><div class="md">
   <div class="mh"></div><div class="mt" id="colName"></div><div style="height:8px"></div>
+  <div class="cpick-sec">
+    <div class="cpick-ttl">📝 거래처 메모</div>
+    <textarea id="colMemoInp" class="cmemo-inp" placeholder="비밀번호 등 간단한 메모 입력..."></textarea>
+  </div>
   <div class="cpick-sec"><div class="cpick-ttl">🎨 셀 배경색</div><div class="cpick-row" id="colCellRow"></div></div>
   <div class="cpick-sec"><div class="cpick-ttl">🔤 거래처 글자색</div><div class="cpick-row" id="colNameRow"></div></div>
-  <div class="mb"><button class="mc" onclick="closeAll()">취소</button><button class="mv" onclick="saveColor()">✔ 적용</button></div>
+  <div class="mb"><button class="mc" onclick="closeAll()">취소</button><button class="mv" onclick="saveColor()">✔ 저장</button></div>
 </div></div>
 
 <div class="toast" id="toast"></div>
@@ -333,7 +341,7 @@ function loadAll(){
   apiGet(function(r){
     if(r&&r.success){
       D.months=r.months;D.clients=r.clients;
-      if(r.memos) D.memos = r.memos; // 구글시트에서 메모도 불러와 덮어쓰기
+      if(r.memos) D.memos = r.memos;
       try{localStorage.setItem('imgdata',JSON.stringify({months:r.months,clients:r.clients,memos:D.memos}));}catch(e){}
       if(MODE==='memo') renderMemos(); else render();
     }else toast('로드 실패','err');
@@ -376,7 +384,11 @@ function renderBody(){
 
     html+='<tr class="'+cbCls+'">';
     html+='<td class="sk cn">'+(i+1)+'</td>';
-    html+='<td class="sk cname '+ntCls+'" onclick="openColor('+i+',event)" style="cursor:pointer">'+escH(c.name)+'</td>';
+    
+    // ★ 메모가 있으면 예쁜 빨간 점 표시 (공간 차지 X)
+    var memoIcon = c.memo ? '<div style="position:absolute;top:5px;right:4px;width:4px;height:4px;background:var(--red);border-radius:50%;box-shadow:0 0 2px rgba(0,0,0,0.5);"></div>' : '';
+    
+    html+='<td class="sk cname '+ntCls+'" onclick="openColor('+i+',event)" style="cursor:pointer">'+escH(c.name)+memoIcon+'</td>';
     html+='<td class="sk camt">'+(c.amount||'')+'</td>';
     D.months.forEach(function(m){
       var v=(c.payments||{})[m]||'';
@@ -416,7 +428,7 @@ function renderEditBody(){
   editClients.forEach(function(c,i){
     var opts='';for(var p=1;p<=n;p++)opts+='<option value="'+p+'"'+(p===i+1?' selected':'')+'>'+p+'</option>';
     html+='<tr><td class="sk cn" style="padding:3px 2px"><select class="pos-sel" onchange="moveToPos('+i+',this.value)">'+opts+'</select></td>';
-    html+='<td class="sk" style="padding:3px;min-width:110px"><input class="name-inp" data-idx="'+i+'" value="'+escA(c.name)+'"></td>';
+    html+='<td class="sk" style="padding:3px;min-width:118px"><input class="name-inp" data-idx="'+i+'" value="'+escA(c.name)+'"></td>';
     html+='<td class="sk camt" style="padding:3px 2px"><input class="amt-inp" type="number" step="0.5" inputmode="decimal" data-aidx="'+i+'" value="'+(c.amount||0)+'"></td>';
     html+='<td style="text-align:center;padding:3px"><button class="del-btn" onclick="askDel('+i+')">✕</button></td></tr>';
   });
@@ -486,7 +498,11 @@ function doAddMonth(){var name=document.getElementById('mName').value.trim();if(
 function openColor(idx,e){
   e.stopPropagation();COLOR_IDX=idx;var c=D.clients[idx];
   tmpCell=c.cellColor||'';tmpName=c.nameColor||'';
-  document.getElementById('colName').textContent=c.name;buildCpRows();showMo('colMo');
+  document.getElementById('colName').textContent=c.name;
+  
+  document.getElementById('colMemoInp').value = c.memo || ''; 
+  
+  buildCpRows();showMo('colMo');
 }
 function buildCpRows(){
   var ch='',nh='';
@@ -501,13 +517,19 @@ function buildCpRows(){
   document.getElementById('colCellRow').innerHTML=ch;document.getElementById('colNameRow').innerHTML=nh;
 }
 function pickCol(el){if(el.getAttribute('data-t')==='cell')tmpCell=el.getAttribute('data-v');else tmpName=el.getAttribute('data-v');buildCpRows();}
+
 function saveColor(){
   if(COLOR_IDX<0)return;
+  var newMemo = document.getElementById('colMemoInp').value.trim();
   D.clients[COLOR_IDX].cellColor=tmpCell;
   D.clients[COLOR_IDX].nameColor=tmpName;
+  D.clients[COLOR_IDX].memo = newMemo; 
+  
   closeAll();render();
   try{localStorage.setItem('imgdata',JSON.stringify({months:D.months,clients:D.clients,memos:D.memos}));}catch(e){}
-  apiPost({action:'saveClientColor',idx:COLOR_IDX,cellColor:tmpCell,nameColor:tmpName},function(){toast('색상 저장됨');});
+  
+  apiPost({action:'saveClientColor',idx:COLOR_IDX,cellColor:tmpCell,nameColor:tmpName});
+  apiPost({action:'saveClientMemo',idx:COLOR_IDX,memo:newMemo}, function(){toast('저장되었습니다');});
 }
 
 function showRecent(){
@@ -584,7 +606,6 @@ function addMemo() {
   renderMemos();
   toast('메모가 추가되었습니다.');
   
-  // 구글 시트로 백업 전송!
   apiPost({action:'saveMemos', memos: D.memos});
 }
 
@@ -595,7 +616,6 @@ function delMemo(idx) {
     renderMemos();
     toast('삭제되었습니다.');
     
-    // 구글 시트로 변경사항 전송!
     apiPost({action:'saveMemos', memos: D.memos});
   }
 }
@@ -605,7 +625,7 @@ function doSync(){
   apiGet(function(r){
     if(r&&r.success){
       D.months=r.months;D.clients=r.clients;
-      if(r.memos) D.memos = r.memos; // 시트에서 메모 불러오기
+      if(r.memos) D.memos = r.memos;
       try{localStorage.setItem('imgdata',JSON.stringify({months:r.months,clients:r.clients,memos:D.memos}));}catch(e){} 
       if(MODE==='memo') renderMemos(); else render(); 
       toast('동기화 완료!');
