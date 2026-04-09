@@ -35,7 +35,6 @@ body{font-family:-apple-system,'Malgun Gothic','맑은 고딕',sans-serif;backgr
 .toolbar-right button{background:var(--surface);border:1px solid var(--border);color:var(--text-dim);border-radius:8px;padding:5px 8px;font-size:12px;cursor:pointer;font-family:inherit}
 .toolbar-right button:active{background:var(--border);color:var(--text)}
 
-/* 왼쪽 고정 영역 넓이 198px로 계산 */
 .tw{flex:1;overflow:auto;-webkit-overflow-scrolling:touch;scroll-snap-type:x proximity;scroll-behavior:smooth;scroll-padding-left:198px}
 table{border-collapse:collapse;min-width:100%;font-size:13px}
 thead th{position:sticky;top:0;z-index:20;background:var(--header-bg);border-bottom:2px solid var(--border-light);padding:8px 4px;font-weight:700;font-size:11px;color:var(--text-dim);white-space:nowrap;text-align:center;line-height:1.4}
@@ -44,7 +43,6 @@ thead th.cm{color:var(--green);background:linear-gradient(180deg,rgba(74,222,128
 th.sk,td.sk{position:sticky;z-index:10;background:var(--bg2)}
 thead th.sk{z-index:30;background:var(--header-bg)}
 
-/* --- 최적화된 칸 너비 설정 --- */
 .cn{left:0;width:26px;min-width:26px;max-width:26px;text-align:center}
 .cname{left:26px;width:134px;min-width:134px;max-width:134px;text-align:left}
 .camt{left:160px;width:38px;min-width:38px;max-width:38px;text-align:right}
@@ -299,7 +297,7 @@ function apiCall(params,onOk,onErr){
   var cb='_cb'+(++_ci),done=false;
   var timer=setTimeout(function(){
     if(done)return;done=true;clean();hideSaving();
-    toast('응답 없음 - 재시도','err');if(onErr)onErr(new Error('timeout'));
+    toast('통신 오류 - 재시도','err');if(onErr)onErr(new Error('timeout'));
   },20000);
   window[cb]=function(d){
     if(done)return;done=true;clean();clearTimeout(timer);hideSaving();if(onOk)onOk(d);
@@ -317,13 +315,32 @@ function apiCall(params,onOk,onErr){
   sc.id='_s'+cb;
   sc.onerror=function(){
     if(done)return;done=true;clean();clearTimeout(timer);hideSaving();
-    toast('통 오류','err');if(onErr)onErr(new Error('error'));
+    toast('통신 오류','err');if(onErr)onErr(new Error('error'));
   };
   sc.src=SCRIPT_URL+'?callback='+cb+'&'+qs;
   document.head.appendChild(sc);
 }
+
 function apiGet(ok,err){apiCall({action:'getAllData'},ok,err);}
-function apiPost(p,ok,err){apiCall(p,ok,err);}
+
+// ★ 통신 오류 해결: 대용량 데이터는 박스(POST)에 담아서 전송하도록 수정 완료!
+function apiPost(p, ok, err) {
+  showSaving();
+  var fd = new URLSearchParams();
+  for (var k in p) {
+    var v = p[k];
+    if (v !== null && typeof v === 'object') v = JSON.stringify(v);
+    fd.append(k, v);
+  }
+  fetch(SCRIPT_URL, { method: 'POST', body: fd })
+    .then(function(r) { return r.json(); })
+    .then(function(d) { hideSaving(); if (ok) ok(d); })
+    .catch(function(e) {
+      hideSaving(); 
+      toast('통신 오류', 'err'); 
+      if (err) err(e); 
+    });
+}
 
 function showSaving(){document.getElementById('saving').classList.add('show');}
 function hideSaving(){document.getElementById('saving').classList.remove('show');}
@@ -387,7 +404,6 @@ function renderBody(){
     html+='<tr class="'+cbCls+'">';
     html+='<td class="sk cn">'+(i+1)+'</td>';
     
-    // ★ 메모가 있으면 예쁜 빨간 점 표시 (우측 상단 콕)
     var memoIcon = c.memo ? '<div style="position:absolute;top:4px;right:3px;width:4px;height:4px;background:var(--red);border-radius:50%;box-shadow:0 0 2px rgba(0,0,0,0.5);"></div>' : '';
     
     html+='<td class="sk cname '+ntCls+'" onclick="openColor('+i+',event)" style="cursor:pointer">'+escH(c.name)+memoIcon+'</td>';
