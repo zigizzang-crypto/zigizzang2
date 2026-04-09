@@ -35,7 +35,8 @@ body{font-family:-apple-system,'Malgun Gothic','맑은 고딕',sans-serif;backgr
 .toolbar-right button{background:var(--surface);border:1px solid var(--border);color:var(--text-dim);border-radius:8px;padding:5px 8px;font-size:12px;cursor:pointer;font-family:inherit}
 .toolbar-right button:active{background:var(--border);color:var(--text)}
 
-.tw{flex:1;overflow:auto;-webkit-overflow-scrolling:touch;scroll-snap-type:x proximity;scroll-behavior:smooth;scroll-padding-left:188px}
+/* 왼쪽 고정 영역 넓이 198px로 계산 */
+.tw{flex:1;overflow:auto;-webkit-overflow-scrolling:touch;scroll-snap-type:x proximity;scroll-behavior:smooth;scroll-padding-left:198px}
 table{border-collapse:collapse;min-width:100%;font-size:13px}
 thead th{position:sticky;top:0;z-index:20;background:var(--header-bg);border-bottom:2px solid var(--border-light);padding:8px 4px;font-weight:700;font-size:11px;color:var(--text-dim);white-space:nowrap;text-align:center;line-height:1.4}
 thead th.cm{color:var(--green);background:linear-gradient(180deg,rgba(74,222,128,.08)0%,var(--header-bg)100%);border-bottom-color:var(--green)}
@@ -43,10 +44,11 @@ thead th.cm{color:var(--green);background:linear-gradient(180deg,rgba(74,222,128
 th.sk,td.sk{position:sticky;z-index:10;background:var(--bg2)}
 thead th.sk{z-index:30;background:var(--header-bg)}
 
-/* --- 변경된 부분: 이름 칸(124px) 늘리고 금액 칸(34px) 줄임 --- */
-.cn{left:0;width:30px;min-width:30px;max-width:30px;text-align:center}
-.cname{left:30px;width:124px;min-width:124px;max-width:124px;text-align:left}
-.camt{left:154px;width:34px;min-width:34px;max-width:34px;text-align:right}
+/* --- 최적화된 칸 너비 설정 --- */
+.cn{left:0;width:26px;min-width:26px;max-width:26px;text-align:center}
+.cname{left:26px;width:134px;min-width:134px;max-width:134px;text-align:left}
+.camt{left:160px;width:38px;min-width:38px;max-width:38px;text-align:right}
+
 td.cn,td.cname,td.camt{background:var(--bg2);outline:1px solid var(--bg2)}
 thead th.cn,thead th.cname,thead th.camt{background:var(--header-bg);outline:1px solid var(--header-bg)}
 tbody tr:nth-child(even) td.cn,
@@ -56,9 +58,9 @@ tbody td{padding:6px 4px;border-bottom:1px solid var(--border);vertical-align:mi
 tbody tr:nth-child(even) td{background:var(--row-alt)}
 tbody tr:nth-child(even) td.sk{background:color-mix(in srgb,var(--bg2),white 1.5%)}
 td.cn{font-size:10px;color:var(--text-dim);text-align:center;border-right:1px solid var(--border-light);font-weight:600}
-td.cname{font-weight:700;font-size:11px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;padding-left:4px;padding-right:8px;} /* 빨간 점을 위해 우측 여백 8px 확보 */
+td.cname{font-weight:700;font-size:11px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;padding-left:4px;padding-right:6px;}
 td.cname.sp{color:var(--red-text)}
-td.camt{font-size:11px;color:var(--text);text-align:right;padding-right:3px;font-weight:600}
+td.camt{font-size:11px;color:var(--text);text-align:right;padding-right:4px;font-weight:600}
 td.dc{text-align:center;font-size:12px;font-weight:700;min-width:42px;cursor:pointer;user-select:none;color:var(--text-muted);scroll-snap-align:start}
 td.dc:active{opacity:.7}
 td.dc.hd{color:var(--text-dim);background:var(--green-cell)}
@@ -315,7 +317,7 @@ function apiCall(params,onOk,onErr){
   sc.id='_s'+cb;
   sc.onerror=function(){
     if(done)return;done=true;clean();clearTimeout(timer);hideSaving();
-    toast('통신 오류','err');if(onErr)onErr(new Error('error'));
+    toast('통 오류','err');if(onErr)onErr(new Error('error'));
   };
   sc.src=SCRIPT_URL+'?callback='+cb+'&'+qs;
   document.head.appendChild(sc);
@@ -385,8 +387,8 @@ function renderBody(){
     html+='<tr class="'+cbCls+'">';
     html+='<td class="sk cn">'+(i+1)+'</td>';
     
-    // ★ 메모가 있으면 예쁜 빨간 점 표시 (공간 차지 X)
-    var memoIcon = c.memo ? '<div style="position:absolute;top:5px;right:4px;width:4px;height:4px;background:var(--red);border-radius:50%;box-shadow:0 0 2px rgba(0,0,0,0.5);"></div>' : '';
+    // ★ 메모가 있으면 예쁜 빨간 점 표시 (우측 상단 콕)
+    var memoIcon = c.memo ? '<div style="position:absolute;top:4px;right:3px;width:4px;height:4px;background:var(--red);border-radius:50%;box-shadow:0 0 2px rgba(0,0,0,0.5);"></div>' : '';
     
     html+='<td class="sk cname '+ntCls+'" onclick="openColor('+i+',event)" style="cursor:pointer">'+escH(c.name)+memoIcon+'</td>';
     html+='<td class="sk camt">'+(c.amount||'')+'</td>';
@@ -428,7 +430,7 @@ function renderEditBody(){
   editClients.forEach(function(c,i){
     var opts='';for(var p=1;p<=n;p++)opts+='<option value="'+p+'"'+(p===i+1?' selected':'')+'>'+p+'</option>';
     html+='<tr><td class="sk cn" style="padding:3px 2px"><select class="pos-sel" onchange="moveToPos('+i+',this.value)">'+opts+'</select></td>';
-    html+='<td class="sk" style="padding:3px;min-width:118px"><input class="name-inp" data-idx="'+i+'" value="'+escA(c.name)+'"></td>';
+    html+='<td class="sk" style="padding:3px;min-width:128px"><input class="name-inp" data-idx="'+i+'" value="'+escA(c.name)+'"></td>';
     html+='<td class="sk camt" style="padding:3px 2px"><input class="amt-inp" type="number" step="0.5" inputmode="decimal" data-aidx="'+i+'" value="'+(c.amount||0)+'"></td>';
     html+='<td style="text-align:center;padding:3px"><button class="del-btn" onclick="askDel('+i+')">✕</button></td></tr>';
   });
